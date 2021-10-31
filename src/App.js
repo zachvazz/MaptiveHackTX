@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect, Component } from 'react';
 
 import { createMuiTheme, ThemeProvider, makeStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
 import NavBar from './components/NavBar'
 import Grid from './components/Grid'
 import Footer from './components/Footer'
+import Marker from './components/Marker';
 import './App.css';
 //changes to imports 
 import GoogleMapReact from 'google-map-react';
@@ -62,10 +63,30 @@ const styles = makeStyles({
   },
 })
 
+const AnyReactComponent = ({ text }) => <div style={{ position: "absolute" }}>{text}</div>;
+
 function App() {
 
-  const [location, setLocation] = useState({lat: 30.28641499267145, lng: -97.73701995357007})
-  const classes = styles();
+  const [location, setLocation] = useState({ lat: 0, lng: 0 })
+  const [pins, setPins] = useState([
+    { lat: 30.2830, lng: -97.7369, emoji: "🎉" },
+    { lat: 30.281930, lng: -97.7344, emoji: "⚽" },
+    { lat: 30.2, lng: -97.73, emoji: "🎉" },
+  ]
+)
+  // const pins = 
+    const classes = styles();
+
+  navigator.geolocation.getCurrentPosition((pos) => {
+    setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude })
+    setPins(pins.concat([{lat: pos.coords.latitude, lng: pos.coords.longitude, emoji: "💻"},
+  
+    { lat: pos.coords.latitude + 0.00002, lng: pos.coords.longitude, emoji: "🎉" },
+    { lat: pos.coords.latitude - 0.0004, lng: pos.coords.longitude, emoji: "⚽" },
+    { lat: pos.coords.latitude + 0.0001, lng: pos.coords.longitude, emoji: "🎉" },
+  ]))
+  });
+
 
   return (
     <div className="App">
@@ -80,24 +101,33 @@ function App() {
           <Grid icon={<SecurityIcon style={{ fill: "#4360A6", height: "125", width: "125" }} />} title="I'm Maptive" btnTitle="Host an Event" />
           <Grid icon={<EventNoteIcon style={{ fill: "#449A76", height: "125", width: "125" }} />} title="I'm Looking to get Maptive" btnTitle="Sign up" />
         </div>
+
         <div>
-          {navigator.geolocation.getCurrentPosition(function (position) {
-            <div style={{ height: '100vh', width: '100%' }}>
-              <GoogleMapReact
-                bootstrapURLKeys={{ key: "AIzaSyDmX5pSlo9KB0m_5ZXsK9O5DH3mAk2akSU" }}
-                defaultZoom={10}
-                defaultCenter={{
-                  lat: position.coords.latitude,
-                  lng: position.coords.longitude
-                }}
-              >
-              
-              </GoogleMapReact>
-            </div>
-            console.log("Latitude is :", position.coords.latitude);
-            console.log("Longitude is :", position.coords.longitude);
-          })
-          }
+          {pins.map((pin, index) => {
+            {/*console.log(pin)*/ }
+            <p>Hello {index}</p>
+          })}
+          <div style={{ height: '100vh', width: '100%' }}>
+            {console.log(pins)}
+            <GoogleMapReact
+              bootstrapURLKeys={{ key: "" }}
+              defaultZoom={17}
+              center={location}
+            >
+              {pins.map((pin, index) => {
+                return <Marker
+                  key={index}
+                  lat={pin.lat}
+                  lng={pin.lng}
+                  text="Pin"
+                  emoji={pin.emoji}
+                />
+              })}
+
+
+
+            </GoogleMapReact>
+          </div>
         </div>
       </ThemeProvider>
     </div>

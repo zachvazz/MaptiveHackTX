@@ -19,11 +19,13 @@ const Wrapper = styled.div`
   }
 `;
 
-const Marker = ({ text, onClick }) => (
+const Marker = ({ emoji, text, onClick }) => (
   <Wrapper
     alt={text}
     onClick={onClick}
-  />
+  >
+    {emoji}
+  </Wrapper>
 );
 
 Marker.defaultProps = {
